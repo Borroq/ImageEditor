@@ -13,7 +13,7 @@ public class SimplePaintApp extends JFrame {
     public SimplePaintApp()  {
         super("Prosta aplikacja do rysowania");
         canvasImage = new BufferedImage(800, 600, BufferedImage.TYPE_4BYTE_ABGR);
-        fillCanvas(Color.WHITE); //Wypełnienie płótna kolorem białym
+        /*fillCanvas(Color.WHITE); //Wypełnienie płótna kolorem białym
         DrawingPanel drawingPanel = new DrawingPanel;
         getContentPane().add(drawingPanel, BorderLayout.CENTER);
 
@@ -22,6 +22,6 @@ public class SimplePaintApp extends JFrame {
         setSize(800,600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setVisible(true);
+        setVisible(true);*/
     }
 }
