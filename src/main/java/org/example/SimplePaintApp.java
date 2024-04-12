@@ -1,27 +1,36 @@
 package org.example;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 public class SimplePaintApp extends JFrame {
-    private Color currentColor = Color.BLACK; //Domyślny kolor lini
+/*    private Color currentColor = Color.BLACK; //Domyślny kolor lini
     private int strokeSize = 5; //Domyślna grubość lini
     private BufferedImage canvasImage; // Obraz płótna do rysowania
-    private Point lineStart = null; //Punkt początkowy lini, zainicjowany jako null
+    private Point lineStart = null; //Punkt początkowy lini, zainicjowany jako null*/
 
     public SimplePaintApp() {
         super("Prosta aplikacja do rysowania");
-        canvasImage = new BufferedImage(800, 600, BufferedImage.TYPE_4BYTE_ABGR);
-        fillCanvas(Color.BLACK); //Wypełnienie płótna kolorem białym
-        DrawingPanel drawingPanel = new DrawingPanel();
+
+        ImageData imageData = new ImageData();
+        imageData.initializeCanvasImage();
+
+        Container contentPane = getContentPane();
+
+        Toolbar toolbar = new Toolbar(imageData);
+        toolbar.fillCanvas(imageData.getCanvasImage(), Color.WHITE); //Wypełnienie płótna kolorem białym
+
+        DrawingPanel drawingPanel = new DrawingPanel(imageData);
         getContentPane().add(drawingPanel, BorderLayout.CENTER);
 
-        createToolbar(); // Tworzenie paska narzędzi
+
+       /* toolbar.openImage(imageData.getCanvasImage());
+        toolbar.saveImage(imageData.getCanvasImage());*/
+        toolbar.createToolbar(imageData, contentPane); // Tworzenie paska narzędzi
+
+        //createToolbar(imageData);
 
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,14 +40,15 @@ public class SimplePaintApp extends JFrame {
 
 //================ WYDZIELIC DO OSOBNEJ KLASY =============================
 
-    private void fillCanvas(Color color) {
+
+  /* private void fillCanvas(BufferedImage canvasImage, Color color) {
         Graphics2D g2d = canvasImage.createGraphics();
         g2d.setColor(color);
         g2d.fillRect(0, 0, canvasImage.getWidth(), canvasImage.getHeight());
         g2d.dispose();
     }
 
-    private void openImage() {
+    private void openImage(BufferedImage canvasImage) {
         JFileChooser fileChooser = new JFileChooser();
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -49,7 +59,7 @@ public class SimplePaintApp extends JFrame {
         }
     }
 
-    private void saveImage() {
+    private void saveImage(BufferedImage canvasImage) {
         JFileChooser fileChooser = new JFileChooser();
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -61,31 +71,33 @@ public class SimplePaintApp extends JFrame {
     }
 
 
-    private void createToolbar() {
+    private void createToolbar(ImageData imageData) {
         JToolBar toolBar = new JToolBar();
+        BufferedImage canvasImage = imageData.getCanvasImage();
+
 
         JButton openButton = new JButton("Otwórz");
-        openButton.addActionListener(e -> openImage());
+        openButton.addActionListener(e -> openImage(canvasImage));
         toolBar.add(openButton);
 
         JButton saveButton = new JButton("Zapisz");
-        saveButton.addActionListener(e -> saveImage());
+        saveButton.addActionListener(e -> saveImage(canvasImage));
         toolBar.add(saveButton);
 
         JButton colorButton = new JButton("Kolor");
         colorButton.addActionListener(e -> {
-            Color chosenColor = JColorChooser.showDialog(this, "Wybierz kolor", currentColor);
+            Color chosenColor = JColorChooser.showDialog(this, "Wybierz kolor", imageData.getCurrentColor());
             if (chosenColor != null) {
-                currentColor = chosenColor;
+                imageData.setCurrentColor(chosenColor);
             }
         });
         toolBar.add(colorButton);
 
         JButton strokeButton = new JButton("Grubość");
         strokeButton.addActionListener(e -> {
-            String size = JOptionPane.showInputDialog(this, "Podaj grubość linii: ", strokeSize);
+            String size = JOptionPane.showInputDialog(this, "Podaj grubość linii: ", imageData.getStrokeSize());
             try {
-                strokeSize = Integer.parseInt(size);
+                imageData.setStrokeSize(Integer.parseInt(size));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Nieprawidłowa wartość!", "Błąd", JOptionPane.ERROR_MESSAGE);
             }
@@ -93,50 +105,8 @@ public class SimplePaintApp extends JFrame {
         toolBar.add(strokeButton);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
-    }
+    }*/
 
 
-//=================== WYDZIELIC DO OSOBNEJ KLASY ==============================
-    public class DrawingPanel extends JPanel {
 
-        public DrawingPanel() {
-            setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    lineStart = e.getPoint();
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    lineStart = null; //Reset starting point after releasing the mouse
-                }
-            });
-
-            addMouseMotionListener(new MouseMotionAdapter() {
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    if(lineStart != null) {
-                        drawLine(e.getPoint());
-                        lineStart = e.getPoint();
-                    }
-                }
-            });
-        }
-
-        private void drawLine(Point endPoint) {
-            Graphics2D g2d = canvasImage.createGraphics();
-            g2d.setColor(currentColor);
-            g2d.setStroke(new BasicStroke(strokeSize));
-            g2d.drawLine(lineStart.x, lineStart.y, endPoint.x, endPoint.y);
-            g2d.dispose();
-            repaint();
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(canvasImage, 0, 0, this);
-        }
-    }
 }
